@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TreeNode, AnimationStep, TreeData } from '../types';
+import { AnimationStep, TreeData } from '../types';
 import { createTree1, createTree2, calculateNodePositions, mergeTrees } from '../utils/treeUtils';
 import { generateDFSAnimationSteps } from '../algorithms/dfsAlgorithm';
 import { generateBFSAnimationSteps } from '../algorithms/bfsAlgorithm';

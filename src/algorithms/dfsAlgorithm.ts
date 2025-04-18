@@ -1,4 +1,4 @@
-import { TreeNode, AnimationStep, AnimationSnapshot } from '../types';
+import { TreeNode, AnimationStep } from '../types';
 import { createTreeNode } from '../utils/treeUtils';
 
 // 生成DFS算法的动画步骤
