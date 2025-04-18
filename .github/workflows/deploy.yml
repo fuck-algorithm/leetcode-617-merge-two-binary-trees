@@ -1,24 +1,25 @@
 name: Deploy to GitHub Pages
-permissions:
-  contents: write   # 允许推送分支
-  pages: write      # 授权部署到 GitHub Pages
-  id-token: write   # 授权生成部署凭证
 on:
   push:
     branches: [main]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write    # 允许推送分支
+      pages: write       # 授权部署到 GitHub Pages
+      id-token: write    # 授权生成部署凭证
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          # 不使用 cache，避免缺少 lockfile 时出错
 
       - name: Install dependencies
         run: npm install
@@ -26,14 +27,6 @@ jobs:
       - name: Build project
         run: npm run build
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: true   # 允许 GitHub Token 持久化用于推送
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
