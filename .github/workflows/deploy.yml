@@ -1,4 +1,8 @@
 name: Deploy to GitHub Pages
+permissions:
+  contents: read    # 如果需要访问仓库内容
+  pages: write      # 授权部署到 GitHub Pages
+  id-token: write   # 授权生成部署凭证
 on:
   push:
     branches: [main]
