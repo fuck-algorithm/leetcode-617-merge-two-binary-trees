@@ -41,4 +41,5 @@ export interface AnimationSnapshot {
 export interface AnimationStep {
   snapshot: AnimationSnapshot;
   description: string;
+  highlightedNodes?: string[]; // 添加高亮节点ID列表属性
 } 
