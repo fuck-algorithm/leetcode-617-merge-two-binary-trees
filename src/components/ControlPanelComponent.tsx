@@ -1,31 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { 
-  playAnimation, 
-  pauseAnimation, 
-  setSpeed, 
   nextStep, 
   prevStep, 
   setCurrentStep,
-  setAlgorithm,
-  resetAnimation
-} from '../store/animationSlice';
+  resetSteps
+} from '../store/features/treeSlice';
 import { RootState } from '../store';
 
 const ControlPanelComponent: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { animation, steps } = useAppSelector((state: RootState) => ({
-    animation: state.animation.animation,
-    steps: state.animation.animation.algorithm === 'DFS' 
-      ? state.animation.dfsSteps 
-      : state.animation.bfsSteps
-  }));
+  const { currentStep, totalSteps, steps } = useAppSelector((state: RootState) => state.tree);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
+  const [algorithm, setAlgorithmState] = useState<'DFS' | 'BFS'>('DFS');
   
   const [intervalId, setIntervalId] = useState<number | null>(null);
   
   // 动画播放控制
   useEffect(() => {
-    if (animation.isPlaying) {
+    if (isPlaying && currentStep < totalSteps - 1) {
       // 清除旧的定时器
       if (intervalId) {
         clearInterval(intervalId);
@@ -34,13 +28,13 @@ const ControlPanelComponent: React.FC = () => {
       // 设置新的定时器
       const id = window.setInterval(() => {
         dispatch(nextStep());
-      }, 1000 / animation.speed);
+      }, 1000 / speed);
       
       setIntervalId(id);
       
       // 当所有步骤执行完后，停止播放
-      if (animation.currentStep >= steps.length - 1) {
-        dispatch(pauseAnimation());
+      if (currentStep >= totalSteps - 1) {
+        setIsPlaying(false);
       }
     } else if (intervalId) {
       // 暂停时清除定时器
@@ -54,18 +48,18 @@ const ControlPanelComponent: React.FC = () => {
         clearInterval(intervalId);
       }
     };
-  }, [animation.isPlaying, animation.speed, animation.currentStep, steps.length, dispatch, intervalId]);
+  }, [isPlaying, speed, currentStep, totalSteps, dispatch, intervalId]);
   
   // 播放/暂停处理
   const handlePlayPause = () => {
-    if (animation.isPlaying) {
-      dispatch(pauseAnimation());
+    if (isPlaying) {
+      setIsPlaying(false);
     } else {
       // 如果已经到最后一步，则重新开始
-      if (animation.currentStep >= steps.length - 1) {
-        dispatch(resetAnimation());
+      if (currentStep >= totalSteps - 1) {
+        dispatch(setCurrentStep(0));
       }
-      dispatch(playAnimation());
+      setIsPlaying(true);
     }
   };
   
@@ -80,12 +74,12 @@ const ControlPanelComponent: React.FC = () => {
   
   // 算法切换处理
   const handleAlgorithmChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(setAlgorithm(e.target.value as 'DFS' | 'BFS'));
+    setAlgorithmState(e.target.value as 'DFS' | 'BFS');
   };
   
   // 速度调整处理
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSpeed(parseFloat(e.target.value)));
+    setSpeed(parseFloat(e.target.value));
   };
   
   // 进度条处理
@@ -93,104 +87,167 @@ const ControlPanelComponent: React.FC = () => {
     dispatch(setCurrentStep(parseInt(e.target.value, 10)));
   };
   
+  // 重置动画
+  const handleReset = () => {
+    setIsPlaying(false);
+    dispatch(resetSteps());
+  };
+  
   return (
-    <div className="control-panel" style={{ padding: '16px', borderTop: '1px solid #eee' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <div>
+    <div className="control-panel">
+      {/* 左侧控制区域 */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center',
+        gap: '8px',
+      }}>
+        {/* 算法选择 */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          minWidth: '70px'
+        }}>
           <select 
-            value={animation.algorithm} 
+            value={algorithm} 
             onChange={handleAlgorithmChange}
-            style={{ padding: '8px', borderRadius: '4px', marginRight: '10px' }}
+            style={{ 
+              padding: '4px 6px', 
+              borderRadius: '4px', 
+              border: '1px solid #ccc',
+              fontSize: '13px',
+              width: '100%'
+            }}
           >
-            <option value="DFS">深度优先搜索 (DFS)</option>
-            <option value="BFS">广度优先搜索 (BFS)</option>
+            <option value="DFS">DFS</option>
+            <option value="BFS">BFS</option>
           </select>
+        </div>
+        
+        {/* 播放控制按钮组 */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '4px'
+        }}>
+          <button 
+            onClick={handlePrev}
+            disabled={currentStep <= 0}
+            style={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              backgroundColor: currentStep <= 0 ? '#f5f5f5' : 'white',
+              cursor: currentStep <= 0 ? 'not-allowed' : 'pointer',
+              fontSize: '12px'
+            }}
+          >
+            ◀
+          </button>
           
           <button 
             onClick={handlePlayPause}
             style={{ 
-              padding: '8px 16px', 
+              padding: '4px 10px', 
               borderRadius: '4px', 
-              backgroundColor: animation.isPlaying ? '#f44336' : '#4caf50',
+              backgroundColor: isPlaying ? '#f44336' : '#4caf50',
               color: 'white',
               border: 'none',
               cursor: 'pointer',
-              marginRight: '10px'
+              fontSize: '13px'
             }}
           >
-            {animation.isPlaying ? '暂停' : '播放'}
-          </button>
-          
-          <button 
-            onClick={handlePrev}
-            disabled={animation.currentStep <= 0}
-            style={{ 
-              padding: '8px 16px', 
-              borderRadius: '4px',
-              border: '1px solid #ddd',
-              backgroundColor: animation.currentStep <= 0 ? '#f5f5f5' : 'white',
-              cursor: animation.currentStep <= 0 ? 'not-allowed' : 'pointer',
-              marginRight: '10px'
-            }}
-          >
-            上一步
+            {isPlaying ? '⏸' : '▶'}
           </button>
           
           <button 
             onClick={handleNext}
-            disabled={animation.currentStep >= steps.length - 1}
+            disabled={currentStep >= totalSteps - 1}
             style={{ 
-              padding: '8px 16px', 
+              padding: '4px 8px', 
               borderRadius: '4px',
               border: '1px solid #ddd',
-              backgroundColor: animation.currentStep >= steps.length - 1 ? '#f5f5f5' : 'white',
-              cursor: animation.currentStep >= steps.length - 1 ? 'not-allowed' : 'pointer'
+              backgroundColor: currentStep >= totalSteps - 1 ? '#f5f5f5' : 'white',
+              cursor: currentStep >= totalSteps - 1 ? 'not-allowed' : 'pointer',
+              fontSize: '12px'
             }}
           >
-            下一步
+            ▶
+          </button>
+          
+          <button 
+            onClick={handleReset}
+            style={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              fontSize: '12px'
+            }}
+          >
+            ↻
           </button>
         </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ marginRight: '8px' }}>速度:</span>
+      </div>
+
+      {/* 中间进度区域 */}
+      <div className="progress-container">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          marginBottom: '4px'
+        }}>
+          <span style={{ fontSize: '13px' }}>
+            {currentStep + 1}/{totalSteps}
+          </span>
           <input
             type="range"
-            min="0.5"
-            max="3"
-            step="0.1"
-            value={animation.speed}
-            onChange={handleSpeedChange}
-            style={{ width: '100px' }}
+            min="0"
+            max={totalSteps - 1 > 0 ? totalSteps - 1 : 0}
+            value={currentStep}
+            onChange={handleProgressChange}
+            style={{ 
+              flex: '1',
+              minWidth: '100px',
+              height: '6px',
+              margin: '0 10px'
+            }}
           />
-          <span style={{ marginLeft: '8px', minWidth: '30px' }}>{animation.speed.toFixed(1)}x</span>
         </div>
+        
+        {/* 步骤描述部分 */}
+        {steps && steps[currentStep] && (
+          <div className="step-description">
+            <span style={{ fontWeight: 'bold', marginRight: '6px' }}>
+              步骤 {currentStep + 1}:
+            </span>
+            {steps[currentStep].description}
+          </div>
+        )}
       </div>
       
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <span style={{ marginRight: '8px', minWidth: '40px' }}>
-          {animation.currentStep}/{steps.length - 1}
-        </span>
+      {/* 右侧速度控制 */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center',
+        gap: '4px',
+        fontSize: '13px',
+        minWidth: '100px'
+      }}>
+        <span>速度:</span>
         <input
           type="range"
-          min="0"
-          max={steps.length - 1}
-          value={animation.currentStep}
-          onChange={handleProgressChange}
-          style={{ flex: 1 }}
+          min="0.5"
+          max="3"
+          step="0.5"
+          value={speed}
+          onChange={handleSpeedChange}
+          style={{ width: '60px', height: '6px' }}
         />
+        <span style={{ minWidth: '24px' }}>{speed.toFixed(1)}x</span>
       </div>
-      
-      {steps[animation.currentStep] && (
-        <div style={{ 
-          marginTop: '16px', 
-          padding: '12px', 
-          backgroundColor: '#f5f5f5', 
-          borderRadius: '4px',
-          color: '#333'
-        }}>
-          <p style={{ margin: 0 }}>{steps[animation.currentStep].description}</p>
-        </div>
-      )}
     </div>
   );
 };

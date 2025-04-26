@@ -77,6 +77,231 @@ select {
   border: 1px solid #ddd;
 }
 
+/* 树输入面板样式 */
+.tree-input-panel {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.tree-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.tree-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tree-btn {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  color: white;
+  text-align: center;
+}
+
+.apply-btn {
+  background-color: #4CAF50;
+}
+
+.random-btn {
+  background-color: #2196F3;
+}
+
+.input-guide {
+  margin-top: 4px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.input-guide p {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.input-guide p:last-child {
+  margin-bottom: 0;
+}
+
+/* 控制面板样式 */
+.control-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+}
+
+/* 进度容器样式 */
+.progress-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 400px;
+  margin: 0 16px;
+}
+
+/* 步骤描述样式 */
+.step-description {
+  width: 100%;
+  padding: 8px;
+  background-color: #e8f5e9;
+  border-radius: 4px;
+  border: 1px solid #c8e6c9;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 算法选择器 */
+.algorithm-selector {
+  min-width: 80px;
+}
+
+.algorithm-select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 播放控制组 */
+.playback-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.control-btn {
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.start-btn {
+  background-color: #4CAF50;
+  min-width: 50px;
+}
+
+.play-btn {
+  background-color: #2196F3;
+}
+
+.play-btn:hover {
+  background-color: #1976D2;
+}
+
+.prev-btn, .next-btn {
+  background-color: #9E9E9E;
+}
+
+.reset-btn {
+  background-color: #607D8B;
+}
+
+/* 进度控制 */
+.progress-slider {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.step-counter {
+  font-size: 12px;
+  color: #666;
+}
+
+/* 速度控制 */
+.speed-control {
+  min-width: 70px;
+}
+
+.speed-select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 媒体查询，适应不同屏幕尺寸 */
+@media (max-width: 768px) {
+  .progress-container {
+    max-width: 200px;
+    margin: 0 8px;
+  }
+  
+  .control-btn {
+    min-width: 32px;
+    height: 32px;
+  }
+  
+  .playback-controls {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .algorithm-selector, .speed-control {
+    display: none;
+  }
+  
+  .progress-container {
+    max-width: 120px;
+    margin: 0 4px;
+  }
+  
+  .control-btn {
+    min-width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+}
+
 /* 添加一些基本的动画 */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -126,5 +351,122 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* D3树状图样式 */
+.d3-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tree-edge {
+  transition: stroke-opacity 0.3s ease, stroke-width 0.3s ease, stroke 0.3s ease;
+}
+
+.tree-node {
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.tree-node:hover {
+  transform: scale(1.1);
+}
+
+.node-circle {
+  transition: opacity 0.3s ease, r 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
+}
+
+.node-text {
+  transition: font-size 0.3s ease, fill 0.3s ease;
+}
+
+.tree1-edge {
+  stroke-dasharray: 0;
+}
+
+.tree2-edge {
+  stroke-dasharray: 0;
+}
+
+.merged-edge {
+  stroke-dasharray: 0;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.tree1-node:hover .tree1-circle {
+  fill: #bbdefb;
+}
+
+.tree2-node:hover .tree2-circle {
+  fill: #ffecb3;
+}
+
+.merged-node:hover .merged-circle {
+  fill: #c8e6c9;
+}
+
+.zoom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.zoom-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #4285F4;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
+  transition: background-color 0.2s;
+}
+
+.zoom-btn:hover {
+  background: #1A73E8;
+}
+
+.zoom-level {
+  font-size: 14px;
+  margin: 0 5px;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* 添加响应式样式 */
+@media (max-width: 768px) {
+  .zoom-controls {
+    top: 5px;
+    right: 5px;
+    padding: 3px 6px;
+  }
+  
+  .zoom-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+  
+  .zoom-level {
+    font-size: 12px;
+    min-width: 30px;
   }
 }
