@@ -7,6 +7,7 @@ interface TreeNodeProps {
   color?: string;
   scale?: number;
   opacity?: number;
+  isHighlighted?: boolean;
 }
 
 const TreeNodeComponent: React.FC<TreeNodeProps> = ({ 
@@ -14,7 +15,8 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({
   position, 
   color = '#333', 
   scale = 1,
-  opacity = 1
+  opacity = 1,
+  isHighlighted = false
 }) => {
   const nodeRadius = 25 * scale;
   
@@ -23,12 +25,32 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({
       transform={`translate(${position.x}, ${position.y})`}
       style={{ opacity }}
     >
+      {/* 高亮光晕效果 */}
+      {isHighlighted && (
+        <circle
+          r={nodeRadius + 5}
+          fill="none"
+          stroke={color}
+          strokeWidth={2}
+          strokeOpacity={0.5}
+          strokeDasharray="5,3"
+        >
+          <animate 
+            attributeName="r" 
+            from={nodeRadius + 3} 
+            to={nodeRadius + 8} 
+            dur="1s" 
+            repeatCount="indefinite" 
+          />
+        </circle>
+      )}
+      
       {/* 节点圆形背景 */}
       <circle
         r={nodeRadius}
-        fill="#fff"
+        fill={isHighlighted ? `${color}20` : "#fff"}
         stroke={color}
-        strokeWidth={2}
+        strokeWidth={isHighlighted ? 3 : 2}
       />
       
       {/* 节点值 */}
