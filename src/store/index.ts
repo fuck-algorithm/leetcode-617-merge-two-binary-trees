@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import animationReducer from './animationSlice';
+import treeReducer from './features/treeSlice';
 
 const store = configureStore({
   reducer: {
-    animation: animationReducer
-  }
+    tree: treeReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
